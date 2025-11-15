@@ -99,20 +99,287 @@
     <footer>© <span id="year"></span> pplwise</footer>
   </div>
   <script>
-    const data={weeks:["w/c 27 Oct 2025","w/c 03 Nov 2025","w/c 10 Nov 2025","w/c 17 Nov 2025","w/c 24 Nov 2025"],roles:["Senior AI Engineer","Senior Backend Engineer","Keycloak Expert"],weekly:{"Senior AI Engineer":{Sourced:[17,5,0,0,0],Discovery:[0,5,0,0,0],HM:[0,0,0,0,0],Case:[0,0,0,0,0],Offer:[0,0,0,0,0],Hired:[0,0,0,0,0]},"Senior Backend Engineer":{Sourced:[0,0,0,0,0],Discovery:[0,0,0,0,0],HM:[0,0,0,0,0],Case:[0,0,0,0,0],Offer:[0,0,0,0,0],Hired:[0,0,0,0,0]},"Keycloak Expert":{Sourced:[0,0,0,0,0],Discovery:[0,0,0,0,0],HM:[0,0,0,0,0],Case:[0,0,0,0,0],Offer:[0,0,0,0,0],Hired:[0,0,0,0,0]}},health:[{role:"Senior AI Engineer",status:"new",discovery:8,hm:0,task:0,final:0,offer:0,hired:"0/1",note:"3 candidates ready to review after DC"},{role:"Senior Backend Engineer",status:"new",discovery:7,hm:0,task:0,final:0,offer:0,hired:"0/1",note:""},{role:"Keycloak Expert",status:"new",discovery:2,hm:0,task:0,final:0,offer:0,hired:"0/1",note:"requires sourcing"}],notes:{highlights:["Created Spreadsheet to speed up the prequalification process of candidates entering the application process."],challenges:["none so far"]}};
-    const lastUpdatedEl=document.getElementById('lastUpdated');if(lastUpdatedEl)lastUpdatedEl.textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});document.getElementById('year').textContent=new Date().getFullYear();
-    const roleSel=document.getElementById('roleSelect');const weekSel=document.getElementById('weekSelect');data.roles.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;roleSel.appendChild(o);});data.weeks.forEach((w,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=w;weekSel.appendChild(o);});weekSel.value="1";
-    const kpis=[{key:'Sourced',label:'Candidates Sourced'},{key:'Discovery',label:'Discovery Calls'},{key:'HM',label:'HM Interviews'},{key:'Case',label:'Case Studies'},{key:'Offer',label:'Offers'},{key:'Hired',label:'Hires'}];
-    const kpiGrid=document.getElementById('kpiGrid');const funnelCtx=document.getElementById('funnelChart');const trendCtx=document.getElementById('trendChart');let funnelChart,trendChart;
-    function calcDelta(curr,prev){if(prev===0)return{txt:'–',cls:''};const pct=((curr-prev)/prev)*100;return{txt:(pct>0?'+':'')+pct.toFixed(1)+'%',cls:pct>=0?'up':'down'};}
-    function aggregate(weekIndex,role){const keys=['Sourced','Discovery','HM','Case','Offer','Hired'];const totals=Object.fromEntries(keys.map(k=>[k,0]));const prevTotals=Object.fromEntries(keys.map(k=>[k,0]));const roles=role==='all'?data.roles:[role];roles.forEach(r=>{keys.forEach(k=>{totals[k]+=(data.weekly[r]?.[k]?.[weekIndex]||0);if(weekIndex>0)prevTotals[k]+=(data.weekly[r]?.[k]?.[weekIndex-1]||0);});});return{totals,prevTotals};}
-    function renderKPIs(){const weekIndex=+weekSel.value;const role=roleSel.value;const {totals,prevTotals}=aggregate(weekIndex,role);kpiGrid.innerHTML='';kpis.forEach(k=>{const curr=totals[k.key];const prev=prevTotals[k.key]||0;const d=calcDelta(curr,prev);const el=document.createElement('div');el.className='card pad kpi';el.innerHTML=`<div class="label">${k.label}</div><div class="value">${curr}</div><div class="delta ${d.cls}">${d.txt} vs last wk</div>`;kpiGrid.appendChild(el);});}
-    function renderFunnel(){const weekIndex=+weekSel.value;const role=roleSel.value;const {totals}=aggregate(weekIndex,role);const stages=['Sourced','Discovery','HM','Case','Offer','Hired'];const vals=stages.map(s=>totals[s]);const bg=stages.map((_,i)=>`hsl(${(i*36)%360}deg 80% 65% / .9)`);if(funnelChart)funnelChart.destroy();funnelChart=new Chart(funnelCtx,{type:'bar',data:{labels:stages,datasets:[{label:'Count',data:vals,backgroundColor:bg,borderRadius:10}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'}}}}});}
-    function renderTrend(){const role=roleSel.value;const stages=['Sourced','Discovery','HM','Offer','Hired'];const roles=role==='all'?data.roles:[role];const series=Object.fromEntries(stages.map(s=>[s,Array(data.weeks.length).fill(0)]));roles.forEach(r=>{stages.forEach(s=>{(data.weekly[r][s]||[]).forEach((v,i)=>series[s][i]+=v);});});const labels=data.weeks;const datasets=stages.map((s,idx)=>({label:s,data:labels.map((_,i)=>series[s][i]),tension:.35,fill:false,borderColor:`hsl(${(idx*70)%360}deg 70% 45%)`,pointRadius:2.5}));if(trendChart)trendChart.destroy();trendChart=new Chart(trendCtx,{type:'line',data:{labels,datasets},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'}}}}});}
-    function renderHealth(){const tbody=document.querySelector('#healthTable tbody');tbody.innerHTML='';const roleFilter=roleSel.value;const rows=(data.health||[]).filter(h=>roleFilter==='all'||h.role===roleFilter);rows.forEach(h=>{const tr=document.createElement('tr');let label,cls;switch(h.status){case'ok':label='Healthy';cls='ok';break;case'warn':label='Attention';cls='warn';break;case'bad':case'crit':label='Critical';cls='bad';break;case'new':label='○ New';cls='new';break;case'filled':label='🏁 Filled';cls='filled';break;default:label=h.status;cls='new';}tr.innerHTML=`<td>${h.role}</td><td><span class="badge ${cls}">${label}</span></td><td>${h.discovery??0}</td><td>${h.hm??0}</td><td>${h.task??0}</td><td>${h.final??0}</td><td>${h.offer??0}</td><td>${h.hired??0}</td><td style="text-align:left">${h.note||''}</td>`;tbody.appendChild(tr);});}
-    function renderNotes(){const el=document.getElementById('notes');const n=data.notes||{highlights:[],challenges:[]};el.innerHTML=`<h4>Highlights</h4><ul>${(n.highlights||[]).map(x=>`<li>${x}</li>`).join('')}</ul><h4>Challenges</h4><ul>${(n.challenges||[]).map(x=>`<li>${x}</li>`).join('')}</ul>`;}
-    function renderAll(){renderKPIs();renderFunnel();renderTrend();renderHealth();renderNotes();}
-    document.getElementById('exportBtn').addEventListener('click',()=>window.print());roleSel.addEventListener('change',renderAll);weekSel.addEventListener('change',renderAll);renderAll();
-  </script>
-</body>
-</html>
+  const data = {
+    weeks: [
+      "w/c 27 Oct 2025",
+      "w/c 03 Nov 2025",
+      "w/c 10 Nov 2025"
+    ],
+    roles: ["Senior AI Engineer", "Senior Backend Engineer", "Keycloak Expert"],
+    weekly: {
+      "Senior AI Engineer": {
+        Sourced:  [17, 5, 13],
+        Discovery:[0,  5, 5],
+        HM:       [0,  0, 2],
+        Case:     [0,  0, 0],
+        Offer:    [0,  0, 0],
+        Hired:    [0,  0, 0]
+      },
+      "Senior Backend Engineer": {
+        Sourced:  [0, 0, 0],
+        Discovery:[0, 0, 7],
+        HM:       [0, 0, 0],
+        Case:     [0, 0, 0],
+        Offer:    [0, 0, 0],
+        Hired:    [0, 0, 0]
+      },
+      "Keycloak Expert": {
+        Sourced:  [0, 0, 80],
+        Discovery:[0, 0, 0],
+        HM:       [0, 0, 0],
+        Case:     [0, 0, 0],
+        Offer:    [0, 0, 0],
+        Hired:    [0, 0, 0]
+      }
+    },
+    health: [
+      {
+        role: "Senior AI Engineer",
+        status: "new",
+        discovery: 8,12,
+        hm: 0,0,
+        task: 0,2,
+        final: 0,0,
+        offer: 0,0,
+        hired: "0/1",
+        note: ""
+      },
+      {
+        role: "Senior Backend Engineer",
+        status: "new",
+        discovery: 13,
+        hm: 0,0,
+        task: 0,2,
+        final: 0,0,
+        offer: 0,0,
+        hired: "0/1",
+        note: ""
+      },
+      {
+        role: "Keycloak Expert",
+        status: "new",
+        discovery: 2,9,
+        hm: 0,0,
+        task: 0,0,
+        final: 0,0,
+        offer: 0,0,
+        hired: "0/1",
+        note: "Outreach 80+, duplicated Job with different title"
+      }
+    ],
+    notes: {
+      highlights: [
+        "Pipelines for all 3 roles are picking up due to team effort and strong outreach"
+      ],
+      challenges: ["Case Study process needs final alignment"]
+    }
+  };
+
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  if (lastUpdatedEl)
+    lastUpdatedEl.textContent = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const roleSel = document.getElementById('roleSelect');
+  const weekSel = document.getElementById('weekSelect');
+  data.roles.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r;
+    o.textContent = r;
+    roleSel.appendChild(o);
+  });
+  data.weeks.forEach((w, i) => {
+    const o = document.createElement('option');
+    o.value = String(i);
+    o.textContent = w;
+    weekSel.appendChild(o);
+  });
+  weekSel.value = "1";
+
+  const kpis = [
+    { key: 'Sourced', label: 'Candidates Sourced' },
+    { key: 'Discovery', label: 'Discovery Calls' },
+    { key: 'HM', label: 'HM Interviews' },
+    { key: 'Case', label: 'Case Studies' },
+    { key: 'Offer', label: 'Offers' },
+    { key: 'Hired', label: 'Hires' }
+  ];
+
+  const kpiGrid = document.getElementById('kpiGrid');
+  const funnelCtx = document.getElementById('funnelChart');
+  const trendCtx = document.getElementById('trendChart');
+  let funnelChart, trendChart;
+
+  function calcDelta(curr, prev) {
+    if (prev === 0) return { txt: '–', cls: '' };
+    const pct = ((curr - prev) / prev) * 100;
+    return {
+      txt: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%',
+      cls: pct >= 0 ? 'up' : 'down'
+    };
+  }
+
+  function aggregate(weekIndex, role) {
+    const keys = ['Sourced', 'Discovery', 'HM', 'Case', 'Offer', 'Hired'];
+    const totals = Object.fromEntries(keys.map(k => [k, 0]));
+    const prevTotals = Object.fromEntries(keys.map(k => [k, 0]));
+    const roles = role === 'all' ? data.roles : [role];
+    roles.forEach(r => {
+      keys.forEach(k => {
+        totals[k] += (data.weekly[r]?.[k]?.[weekIndex] || 0);
+        if (weekIndex > 0)
+          prevTotals[k] += (data.weekly[r]?.[k]?.[weekIndex - 1] || 0);
+      });
+    });
+    return { totals, prevTotals };
+  }
+
+  function renderKPIs() {
+    const weekIndex = +weekSel.value;
+    const role = roleSel.value;
+    const { totals, prevTotals } = aggregate(weekIndex, role);
+    kpiGrid.innerHTML = '';
+    kpis.forEach(k => {
+      const curr = totals[k.key];
+      const prev = prevTotals[k.key] || 0;
+      const d = calcDelta(curr, prev);
+      const el = document.createElement('div');
+      el.className = 'card pad kpi';
+      el.innerHTML = `
+        <div class="label">${k.label}</div>
+        <div class="value">${curr}</div>
+        <div class="delta ${d.cls}">${d.txt} vs last wk</div>
+      `;
+      kpiGrid.appendChild(el);
+    });
+  }
+
+  function renderFunnel() {
+    const weekIndex = +weekSel.value;
+    const role = roleSel.value;
+    const { totals } = aggregate(weekIndex, role);
+    const stages = ['Sourced', 'Discovery', 'HM', 'Case', 'Offer', 'Hired'];
+    const vals = stages.map(s => totals[s]);
+    const bg = stages.map((_, i) => `hsl(${(i * 36) % 360}deg 80% 65% / .9)`);
+    if (funnelChart) funnelChart.destroy();
+    funnelChart = new Chart(funnelCtx, {
+      type: 'bar',
+      data: {
+        labels: stages,
+        datasets: [{
+          label: 'Count',
+          data: vals,
+          backgroundColor: bg,
+          borderRadius: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,.05)' }
+          }
+        }
+      }
+    });
+  }
+
+  function renderTrend() {
+    const role = roleSel.value;
+    const stages = ['Sourced', 'Discovery', 'HM', 'Offer', 'Hired'];
+    const roles = role === 'all' ? data.roles : [role];
+    const series = Object.fromEntries(stages.map(s => [s, Array(data.weeks.length).fill(0)]));
+    roles.forEach(r => {
+      stages.forEach(s => {
+        (data.weekly[r][s] || []).forEach((v, i) => series[s][i] += v);
+      });
+    });
+    const labels = data.weeks;
+    const datasets = stages.map((s, idx) => ({
+      label: s,
+      data: labels.map((_, i) => series[s][i]),
+      tension: .35,
+      fill: false,
+      borderColor: `hsl(${(idx * 70) % 360}deg 70% 45%)`,
+      pointRadius: 2.5
+    }));
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(trendCtx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,.05)' }
+          }
+        }
+      }
+    });
+  }
+
+  function renderHealth() {
+    const tbody = document.querySelector('#healthTable tbody');
+    tbody.innerHTML = '';
+    const roleFilter = roleSel.value;
+    const rows = (data.health || []).filter(h => roleFilter === 'all' || h.role === roleFilter);
+    rows.forEach(h => {
+      const tr = document.createElement('tr');
+      let label, cls;
+      switch (h.status) {
+        case 'ok': label = 'Healthy'; cls = 'ok'; break;
+        case 'warn': label = 'Attention'; cls = 'warn'; break;
+        case 'bad':
+        case 'crit': label = 'Critical'; cls = 'bad'; break;
+        case 'new': label = '○ New'; cls = 'new'; break;
+        case 'filled': label = '🏁 Filled'; cls = 'filled'; break;
+        default: label = h.status; cls = 'new';
+      }
+      tr.innerHTML = `
+        <td>${h.role}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+        <td>${h.discovery ?? 0}</td>
+        <td>${h.hm ?? 0}</td>
+        <td>${h.task ?? 0}</td>
+        <td>${h.final ?? 0}</td>
+        <td>${h.offer ?? 0}</td>
+        <td>${h.hired ?? 0}</td>
+        <td style="text-align:left">${h.note || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderNotes() {
+    const el = document.getElementById('notes');
+    const n = data.notes || { highlights: [], challenges: [] };
+    el.innerHTML = `
+      <h4>Highlights</h4>
+      <ul>${(n.highlights || []).map(x => `<li>${x}</li>`).join('')}</ul>
+      <h4>Challenges</h4>
+      <ul>${(n.challenges || []).map(x => `<li>${x}</li>`).join('')}</ul>
+    `;
+  }
+
+  function renderAll() {
+    renderKPIs();
+    renderFunnel();
+    renderTrend();
+    renderHealth();
+    renderNotes();
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', () => window.print());
+  roleSel.addEventListener('change', renderAll);
+  weekSel.addEventListener('change', renderAll);
+  renderAll();
+</script>
+
