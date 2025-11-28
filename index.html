@@ -103,7 +103,7 @@
     }
     
     .grid.kpis {
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: repeat(8, minmax(0, 1fr));
     }
     
     @media (max-width: 1100px) {
@@ -307,16 +307,17 @@
       <h3 style="margin:0 0 10px 0;font-size:14px;color:var(--muted)">Pipeline Health</h3>
       <table class="table" id="healthTable">
         <colgroup>
-          <col style="width:22%"><col style="width:8%">
-          <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
-          <col style="width:12%"><col style="width:18%">
+          <col style="width:20%"><col style="width:7%">
+          <col style="width:7%"><col style="width:9%"><col style="width:9%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+          <col style="width:10%"><col style="width:17%">
         </colgroup>
         <thead>
           <tr>
             <th>Role</th>
             <th>DC</th>
             <th>HM IV</th>
-            <th>Task</th>
+            <th>Tech Challenge</th>
+            <th>Tech Interview</th>
             <th>Final</th>
             <th>Offer</th>
             <th>Hired</th>
@@ -354,7 +355,8 @@
           Sourced: [0, 0, 17, 5, 13, 0, 24],
           Discovery: [0, 0, 0, 5, 5, 7, 4],
           HM: [0, 0, 0, 0, 0, 4, 4],
-          Case: [0, 0, 0, 0, 0, 0, 0],
+          TechChallenge: [0, 0, 0, 0, 0, 2, 0],
+          TechInterview: [0, 0, 0, 0, 0, 0, 0],
           CEO: [0, 0, 0, 0, 0, 0, 0],
           Offer: [0, 0, 0, 0, 0, 0, 0],
           Hired: [0, 0, 0, 0, 0, 0, 0]
@@ -364,7 +366,8 @@
           Sourced: [0, 0, 0, 0, 0, 0, 18],
           Discovery: [0, 0, 0, 0, 7, 6, 2],
           HM: [0, 0, 0, 0, 0, 3, 2],
-          Case: [0, 0, 0, 0, 0, 0, 2],
+          TechChallenge: [0, 0, 0, 0, 0, 0, 2],
+          TechInterview: [0, 0, 0, 0, 0, 0, 0],
           CEO: [0, 0, 0, 0, 0, 0, 0],
           Offer: [0, 0, 0, 0, 0, 0, 0],
           Hired: [0, 0, 0, 0, 0, 0, 0]
@@ -374,7 +377,8 @@
           Sourced: [0, 0, 0, 0, 52, 48, 0],
           Discovery: [0, 0, 0, 0, 0, 5, 3],
           HM: [0, 0, 0, 0, 0, 0, 3],
-          Case: [0, 0, 0, 0, 0, 0, 1],
+          TechChallenge: [0, 0, 0, 0, 0, 0, 1],
+          TechInterview: [0, 0, 0, 0, 0, 0, 0],
           CEO: [0, 0, 0, 0, 0, 0, 0],
           Offer: [0, 0, 0, 0, 0, 0, 0],
           Hired: [0, 0, 0, 0, 0, 0, 0]
@@ -384,15 +388,15 @@
       health: {
         // Week index 5 (w/c 17 Nov 2025)
         5: [
-          { role: "Senior AI Engineer", status: "ok", discovery: 7, hm: 2, task: 2, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Senior Backend Engineer", status: "ok", discovery: 12, hm: 5, task: 0, final: 0, offer: 0, hired: "0/1", note: "cleared all applications (500+)" },
-          { role: "Keycloak Expert", status: "ok", discovery: 13, hm: 3, task: 0, final: 0, offer: 0, hired: "0/2", note: "another strong outreach, targeted also Okta" }
+          { role: "Senior AI Engineer", status: "ok", discovery: 7, hm: 2, challenge: 2, techiv: 0, final: 0, offer: 0, hired: "0/1", note: "" },
+          { role: "Senior Backend Engineer", status: "ok", discovery: 12, hm: 5, challenge: 0, techiv: 0, final: 0, offer: 0, hired: "0/1", note: "cleared all applications (500+)" },
+          { role: "Keycloak Expert", status: "ok", discovery: 13, hm: 3, challenge: 0, techiv: 0, final: 0, offer: 0, hired: "0/2", note: "another strong outreach, targeted also Okta" }
         ],
         // Week index 6 (w/c 24 Nov 2025) - current week
         default: [
-          { role: "Senior AI Engineer", status: "ok", discovery: 14, hm: 2, task: 0, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Senior Backend Engineer", status: "ok", discovery: 19, hm: 4, task: 2, final: 0, offer: 0, hired: "0/1", note: "progressing constantly" },
-          { role: "Keycloak Expert", status: "ok", discovery: 16, hm: 0, task: 1, final: 0, offer: 0, hired: "0/1", note: "" }
+          { role: "Senior AI Engineer", status: "ok", discovery: 14, hm: 2, challenge: 2, techiv: 0, final: 0, offer: 0, hired: "0/1", note: "" },
+          { role: "Senior Backend Engineer", status: "ok", discovery: 19, hm: 4, challenge: 2, techiv: 0, final: 0, offer: 0, hired: "0/1", note: "progressing constantly" },
+          { role: "Keycloak Expert", status: "ok", discovery: 16, hm: 0, challenge: 1, techiv: 0, final: 0, offer: 0, hired: "0/1", note: "" }
         ]
       },
       
@@ -452,7 +456,7 @@
     const safe = n => Number.isFinite(+n) ? +n : 0;
 
     function totalsFor(weekIndex, role) {
-      const keys = ['Sourced', 'Discovery', 'HM', 'Case', 'Final', 'Offer', 'Hired'];
+      const keys = ['Sourced', 'Discovery', 'HM', 'TechChallenge', 'TechInterview', 'Final', 'Offer', 'Hired'];
       const t = Object.fromEntries(keys.map(k => [k, 0]));
       const roles = asAll(role) ? data.roles : [role];
       
@@ -472,7 +476,8 @@
       { key: 'Sourced', label: 'Candidates Sourced' },
       { key: 'Discovery', label: 'Discovery Calls' },
       { key: 'HM', label: 'HM Interviews' },
-      { key: 'Case', label: 'Case Studies' },
+      { key: 'TechChallenge', label: 'Tech Challenge' },
+      { key: 'TechInterview', label: 'Tech Interview' },
       { key: 'Final', label: 'Final' },
       { key: 'Offer', label: 'Offers' },
       { key: 'Hired', label: 'Hires' }
@@ -524,7 +529,8 @@
     
     function renderFunnel() {
       const t = totalsFor(+weekSel.value, roleSel.value);
-      const stages = ['Sourced', 'Discovery', 'HM', 'Case', 'Final', 'Offer', 'Hired'];
+      const stages = ['Sourced', 'Discovery', 'HM', 'TechChallenge', 'TechInterview', 'Final', 'Offer', 'Hired'];
+      const displayLabels = ['Sourced', 'Discovery', 'HM', 'Tech Challenge', 'Tech Interview', 'Final', 'Offer', 'Hired'];
       const vals = stages.map(s => t[s]);
       
       if (funnelChart) funnelChart.destroy();
@@ -532,7 +538,7 @@
       funnelChart = new Chart(document.getElementById('funnelChart'), {
         type: 'bar',
         data: {
-          labels: stages,
+          labels: displayLabels,
           datasets: [{
             data: vals,
             backgroundColor: stages.map((_, i) => `hsl(${(i * 36) % 360} 80% 65% / .9)`),
@@ -549,7 +555,8 @@
     }
 
     function renderTrend() {
-      const stages = ['Sourced', 'Discovery', 'HM', 'Final', 'Offer', 'Hired'];
+      const stages = ['Sourced', 'Discovery', 'HM', 'TechChallenge', 'TechInterview', 'Final', 'Offer', 'Hired'];
+      const displayLabels = ['Sourced', 'Discovery', 'HM', 'Tech Challenge', 'Tech Interview', 'Final', 'Offer', 'Hired'];
       const roles = asAll(roleSel.value) ? data.roles : [roleSel.value];
       
       // Get current week index and calculate last 4 weeks
@@ -570,11 +577,11 @@
       });
       
       const datasets = stages.map((s, i) => ({
-        label: s,
+        label: displayLabels[i],
         data: series[s],
         tension: .35,
         fill: false,
-        borderColor: `hsl(${i * 60} 70% 45%)`,
+        borderColor: `hsl(${i * 45} 70% 45%)`,
         pointRadius: 2.5
       }));
       
@@ -626,7 +633,8 @@
           <td>${h.role}</td>
           <td>${h.discovery || 0}</td>
           <td>${h.hm || 0}</td>
-          <td>${h.task || 0}</td>
+          <td>${h.challenge || 0}</td>
+          <td>${h.techiv || 0}</td>
           <td>${h.final || 0}</td>
           <td>${h.offer || 0}</td>
           <td>${h.hired || 0}</td>
