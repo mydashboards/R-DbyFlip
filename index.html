@@ -384,24 +384,24 @@
       health: {
         // Week index 5 (w/c 17 Nov 2025)
         5: [
-          { role: "Senior AI Engineer", status: "new", discovery: 7, hm: 4, task: 0, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Senior Backend Engineer", status: "new", discovery: 6, hm: 3, task: 0, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Keycloak Expert", status: "new", discovery: 5, hm: 0, task: 0, final: 0, offer: 0, hired: "0/1", note: "" }
+          { role: "Senior AI Engineer", status: "ok", discovery: 7, hm: 2, task: 2, final: 0, offer: 0, hired: "0/1", note: "" },
+          { role: "Senior Backend Engineer", status: "ok", discovery: 12, hm: 5, task: 0, final: 0, offer: 0, hired: "0/1", note: "cleared all applications (500+)" },
+          { role: "Keycloak Expert", status: "ok", discovery: 13, hm: 3, task: 0, final: 0, offer: 0, hired: "0/2", note: "another strong outreach, targeted also Okta" }
         ],
-        // Week index 6 (w/c 24 Nov 2025) - default for other weeks
+        // Week index 6 (w/c 24 Nov 2025) - current week
         default: [
-          { role: "Senior AI Engineer", status: "new", discovery: 4, hm: 4, task: 0, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Senior Backend Engineer", status: "new", discovery: 2, hm: 2, task: 2, final: 0, offer: 0, hired: "0/1", note: "" },
-          { role: "Keycloak Expert", status: "new", discovery: 3, hm: 3, task: 1, final: 0, offer: 0, hired: "0/1", note: "" }
+          { role: "Senior AI Engineer", status: "ok", discovery: 14, hm: 2, task: 0, final: 0, offer: 0, hired: "0/1", note: "" },
+          { role: "Senior Backend Engineer", status: "ok", discovery: 19, hm: 4, task: 2, final: 0, offer: 0, hired: "0/1", note: "progressing constantly" },
+          { role: "Keycloak Expert", status: "ok", discovery: 16, hm: 0, task: 1, final: 0, offer: 0, hired: "0/1", note: "" }
         ]
       },
       
       notes: {
         // Week index 5 (w/c 17 Nov 2025)
         5: {
-          highlights: [""],
-          challenges: [""],
-          priorities: [""]
+          highlights: ["Very strong screening and sourcing efforts"],
+          challenges: ["Keycloak case study needs to be ready asap"],
+          priorities: ["1 Keycloak Expert", "2 Senior AI Engineer", "3 Senior Backend Engineer"]
         },
         // Week index 6 (w/c 24 Nov 2025) - current week
         6: {
@@ -458,7 +458,6 @@
       
       roles.forEach(r => {
         keys.forEach(k => {
-          // Map CEO to Final for backward compatibility
           const dataKey = k === 'Final' ? 'CEO' : k;
           t[k] += safe((data.weekly[r][dataKey] || [])[weekIndex]);
         });
@@ -564,7 +563,6 @@
       
       roles.forEach(r => {
         stages.forEach(s => {
-          // Map Final to CEO for backward compatibility
           const dataKey = s === 'Final' ? 'CEO' : s;
           const weekData = data.weekly[r][dataKey] || [];
           weekData.slice(startIndex, endIndex).forEach((v, i) => series[s][i] += safe(v));
